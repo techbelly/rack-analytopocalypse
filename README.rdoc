@@ -1,0 +1,24 @@
+= Rack::Analytopocalypse
+
+Rack middleware to embed Google Analytics tracking code.
+
+== Usage
+
+  require "rack/analytopocalypse"
+
+  use Rack::Analytopocalypse, :web_property_id => "UA-000000-1"
+
+  app = lambda { |env| [200, { 'Content-Type' => 'text/html' }, '<html><body></body></html>'] }
+  run app
+
+== Configuring for a Rails App
+
+In your `Gemfile`:
+
+  gem 'rack-analytopocalypse'
+
+In your `config/application.rb`
+
+  config.middleware.use "Rack::Analytopocalypse", :web_property_id => "UA-0000000-1"
+
+Heavinly based on Rack::GoogleAnalytics which is Copyright (c) 2011 Jason L Perry. See LICENSE for details.
