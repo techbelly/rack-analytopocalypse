@@ -3,28 +3,26 @@ require 'thread'
 module Rack #:nodoc:
   class Analytopocalypse < Struct.new :app, :options
 
-    def initialize
-      @queue = Queue.new
-    end
-
     def call(env)
       status, headers, response = app.call(env)
-
-      if (@queue.length >= 5) {
-        url_to_report = @queue.pop(true)
-        if headers["Content-Type"] =~ /text\/html|application\/xhtml\+xml/
+      puts "HELLO #{response.inspect} #{@queue.inspect}"
+      @queue ||= Queue.new
+      if headers["Content-Type"] =~ /text\/html|application\/xhtml\+xml/
+        if (@queue.length >= 5)   
+          url_to_report = @queue.pop(true)
           body = ""
           response.each { |part| body << part }
           index = body.rindex("</head>")
           if index
-            body.insert(index, tracking_code(options[:web_property_id]),url_to_report)
+            body.insert(index, tracking_code(options[:web_property_id],url_to_report))
             headers["Content-Length"] = body.length.to_s
             response = [body]
           end
-        end
-      }
-      request = Rack::Request(env)
-      @queue.push(request.path)
+        end  
+        request = Rack::Request.new(env)
+        @queue.push(request.path)
+      end
+
       [status, headers, response]
     end
 
