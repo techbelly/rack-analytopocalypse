@@ -5,7 +5,6 @@ module Rack #:nodoc:
 
     def call(env)
       status, headers, response = app.call(env)
-      puts "HELLO #{response.inspect} #{@queue.inspect}"
       @queue ||= Queue.new
       if headers["Content-Type"] =~ /text\/html|application\/xhtml\+xml/
         if (@queue.length >= 5)   
